@@ -17,10 +17,10 @@
 
 #pragma once
 
-#include "MTFind2/Client/Client.h"
-#include "MTFind2/MessagePassing/Message.h"
+#include <MTFind2/MessagePassing/Message.h>
 
 namespace mtfind2 {
+
 /**
  * Message passed by a client to the payment system to requests the recharge of
  * a specific amount of credits.

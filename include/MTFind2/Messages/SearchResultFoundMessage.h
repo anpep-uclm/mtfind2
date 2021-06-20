@@ -17,9 +17,9 @@
 
 #pragma once
 
-#include "MTFind2/MessagePassing/Message.h"
-#include "MTFind2/Search/SearchRequest.h"
-#include "MTFind2/Search/SearchResult.h"
+#include <MTFind2/MessagePassing/Message.h>
+#include <MTFind2/Search/SearchRequest.h>
+#include <MTFind2/Search/SearchResult.h>
 
 namespace mtfind2 {
 /**

@@ -19,7 +19,7 @@
 
 #include <cstdlib>
 
-#include "MTFind2/MessagePassing/Message.h"
+#include <MTFind2/MessagePassing/Message.h>
 
 namespace mtfind2 {
 /**
