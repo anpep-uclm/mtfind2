@@ -27,27 +27,27 @@ namespace mtfind2 {
 void Client::push_message(const NotEnoughCreditMessage &message)
 {
     const std::scoped_lock lock(transaction_lock());
-    std::cerr << "no enough credit" << std::endl;
+    std::cerr << tag() << ": no enough credit" << std::endl;
     PaymentService::instance().push_message(CreditRechargeRequestMessage(*this, 15));
 }
 
 void Client::push_message(const CreditRechargeResponseMessage &message)
 {
     const std::scoped_lock lock(transaction_lock());
-    std::cout << "got " << message.amount() << " in credit" << std::endl;
+    std::cout << tag() << ": got " << message.amount() << " in credit" << std::endl;
     m_credit += message.amount();
 }
 
 void Client::push_message(const NoSearchResultsFoundMessage &message)
 {
     const std::scoped_lock lock(transaction_lock());
-    std::cerr << "no results from " << message.search_request().query();
+    std::cerr << tag() << ": no results from " << message.search_request().query() << std::endl;
 }
 
 void Client::push_message(const SearchResultFoundMessage &message)
 {
     const std::scoped_lock lock(transaction_lock());
-    std::cout << "search result for " << message.search_request().query() << std::endl;
+    std::cout << tag() << ": search result for " << message.search_request().query() << std::endl;
 }
 
 void Client::push_message(const Message &message)
