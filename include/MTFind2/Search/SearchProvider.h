@@ -20,6 +20,9 @@
 #include <Shared/NonCopyable.h>
 #include <Shared/NonMoveable.h>
 
+#include "MTFind2/Client/Client.h"
+#include "SearchRequest.h"
+
 namespace mtfind2 {
 /**
  * Generic search provider interface. Search providers are intended to be
@@ -27,6 +30,7 @@ namespace mtfind2 {
  * This makes them good candidates for being single-instance objects that
  * should not be copied or moved around.
  */
-struct SearchProvider : private NonCopyable, private NonMoveable {
+struct SearchProvider : NonCopyable, NonMoveable {
+    virtual void query(const Client &client, const SearchRequest &search_request) = 0;
 };
 }
