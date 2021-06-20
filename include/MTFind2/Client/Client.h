@@ -17,26 +17,29 @@
 
 #pragma once
 
-#include <Shared/NonCopyable.h>
 #include <atomic>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <random>
 
-#include "MTFind2/MessagePassing/MessageReceiver.h"
-#include "MTFind2/Messages/CreditRechargeResponseMessage.h"
-#include "MTFind2/Messages/NoSearchResultsFoundMessage.h"
-#include "MTFind2/Messages/NotEnoughCreditMessage.h"
-#include "MTFind2/Messages/SearchResultFoundMessage.h"
+#include <MTFind2/MessagePassing/MessageReceiver.h>
+#include <Shared/NonCopyable.h>
+#include <Shared/Tagged.h>
 
 namespace mtfind2 {
+struct NotEnoughCreditMessage;
+struct CreditRechargeResponseMessage;
+struct NoSearchResultsFoundMessage;
+struct SearchResultFoundMessage;
+
 /**
  * Represents a client, this is, a service consumer. It is also capable of
  * receiving Messages so that it can receive search result and subscription
  * credit notifications. Since clients must be unique, it makes little sense
  * for them to be copyable.
  */
-struct Client final : MessageReceiver, NonCopyable {
+struct Client final : MessageReceiver, NonCopyable, Tagged<std::string> {
     /**
      * A client with this value as credit is considered as not using credit.
      */
@@ -72,20 +75,35 @@ struct Client final : MessageReceiver, NonCopyable {
     {
     }
 
+    const std::string tag() const {
+        const char *subscription_type_name;
+        switch (m_subscription_type) {
+        case SubscriptionType::Premium:
+            subscription_type_name = "Premium";
+            break;
+        case SubscriptionType::Standard:
+            subscription_type_name = "Standard";
+            break;
+        }
+
+        return "Client(" + std::to_string(m_id) + ", " + subscription_type_name + ")";
+    }
+
     /**
      * Creates a client with random parameters
      * @return An instance of this class
      */
-    static Client create_random()
+    static Client *create_random()
     {
         static std::atomic<uint32_t> s_last_id(0);
+        static std::default_random_engine s_random_engine;
 
-        auto generate_random_boolean = std::bind(std::uniform_int_distribution(0, 1), std::default_random_engine());
+        std::uniform_int_distribution<int> generate_random_boolean(0, 1);
 
-        const auto subscription_type = generate_random_boolean() ? SubscriptionType::Premium : SubscriptionType::Standard;
+        const auto subscription_type = generate_random_boolean(s_random_engine) ? SubscriptionType::Premium : SubscriptionType::Standard;
         const auto credit = subscription_type == SubscriptionType::Premium ? 15 : NotUsingCredit;
 
-        return { s_last_id++, subscription_type, credit };
+        return new Client(s_last_id++, subscription_type, credit);
     }
 
     uint32_t id() const { return m_id; }
