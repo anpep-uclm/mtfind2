@@ -16,30 +16,39 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <chrono>
-#include <future>
 #include <iostream>
 #include <thread>
+#ifdef __unix__
+#include <csignal>
+#endif
 
-#include <MTFind2/Client/Client.h>
 #include <MTFind2/Search/SearchProxy.h>
 #include <MTFind2/Search/SearchService.h>
 
 using namespace mtfind2;
 using namespace std::chrono_literals;
 
-static void mock_search_requests(
-    const SearchProvider &search_provider,
-    int client_count = 1,
-    int search_request_count = 1,
-    const std::chrono::duration<int64_t> period = 2s)
-{
+static std::atomic<bool> g_keep_running = true;
 
+#ifdef __unix__
+static void signal_handler(int signal_num)
+{
+    if (signal_num == SIGINT) {
+        g_keep_running = false;
+        std::cout << "received SIGINT" << std::endl;
+    }
 }
+#endif // __unix__
 
 int main(int argc, char *argv[])
 {
-    const int num_cores = std::thread::hardware_concurrency();
-    const auto search_services = new SearchService[num_cores];
+#ifdef __unix__
+    signal(SIGINT, signal_handler);
+#endif
+
+    const auto num_cores = std::thread::hardware_concurrency();
+    std::vector<SearchService> search_services(num_cores);
+
     const ContentSource content_sources[] = {
         { "data/La-última-sirena.txt" },
         { "data/prueba.txt" },
@@ -47,15 +56,35 @@ int main(int argc, char *argv[])
     };
 
     SearchProxy search_proxy;
-    for (int i = 0; i < num_cores; i++) {
+    for (size_t i = 0; i < num_cores; i++) {
         for (const auto &content_source : content_sources)
             search_services[i].add_content_source(content_source);
         search_proxy.add_search_service(search_services[i]);
     }
 
-    Client client(42, mtfind2::Client::SubscriptionType::Standard);
-    client.push_message(mtfind2::NotEnoughCreditMessage());
-    client.push_message(mtfind2::CreditRechargeResponseMessage(42));
+
+    std::thread mock_thread([&search_proxy]() {
+        const size_t search_request_count = 15;
+        const auto period = 2s;
+
+        while (g_keep_running) {
+            for (size_t i = 0; i < search_request_count; i++) {
+                auto client = Client::create_random();
+                auto search_request = SearchRequest::create_random();
+                search_proxy.query(*client, *search_request);
+            }
+
+            std::this_thread::sleep_for(period);
+        }
+    });
+
+    std::thread search_thread([&search_proxy]() {
+        while (g_keep_running)
+            search_proxy.serve();
+    });
+
+    search_thread.join();
+    mock_thread.join();
 
     return 0;
 }
