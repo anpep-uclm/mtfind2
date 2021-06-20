@@ -17,7 +17,10 @@
 
 #pragma once
 
+#include <chrono>
 #include <Shared/NonCopyable.h>
+
+#include "ContentSource.h"
 
 namespace mtfind2 {
 /**
@@ -27,15 +30,29 @@ namespace mtfind2 {
  */
 struct SearchResult final : NonCopyable {
     SearchResult(
-        const SearchRequest &search_request,
         const ContentSource &content_source,
         size_t line,
         size_t column,
         size_t length)
+        : m_content_source(content_source)
+        , m_line(line)
+        , m_column(column)
+        , m_length(length)
+        , m_timestamp(std::chrono::steady_clock::now())
     {
     }
-};
+
+    const ContentSource &content_source() const { return m_content_source; }
+    size_t line() const { return m_line; }
+    size_t column() const { return m_column; }
+    size_t length() const { return m_length; }
+    const std::chrono::time_point<std::chrono::steady_clock> &timestamp() const { return m_timestamp; }
 
 private:
-    const SearchRequest&m_search_request;
+    const ContentSource &m_content_source;
+    const size_t m_line;
+    const size_t m_column;
+    const size_t m_length;
+    const std::chrono::time_point<std::chrono::steady_clock> m_timestamp;
+};
 }
