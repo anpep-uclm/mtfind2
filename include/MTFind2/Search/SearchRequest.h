@@ -20,6 +20,7 @@
 #include <chrono>
 #include <string>
 
+#include <MTFind2/Search/Dictionary.h>
 #include <Shared/NonCopyable.h>
 
 namespace mtfind2 {
@@ -29,17 +30,22 @@ namespace mtfind2 {
  * single-instance, no copy semantics are allowed on search request objects.
  */
 struct SearchRequest final : NonCopyable {
-    explicit SearchRequest(std::string query)
-        : m_query(std::move(query))
+    explicit SearchRequest(const std::string& query)
+        : m_query(query)
         , m_timestamp(std::chrono::steady_clock::now())
     {
+    }
+
+    static SearchRequest* create_random()
+    {
+        return new SearchRequest(Dictionary::instance().random_word());
     }
 
     const std::string &query() const { return m_query; }
     const std::chrono::time_point<std::chrono::steady_clock> &timestamp() const { return m_timestamp; }
 
 private:
-    const std::string m_query;
+    const std::string& m_query;
     const std::chrono::time_point<std::chrono::steady_clock> m_timestamp;
 };
 }
