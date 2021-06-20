@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <mutex>
+
 #include "Message.h"
 
 namespace mtfind2 {
@@ -29,7 +31,17 @@ namespace mtfind2 {
 struct MessageReceiver {
     /**
      * Pushes a message to this receiver in order to communicate with it.
+     * @remarks Implementers are responsible for acquiring/releasing the
+     * transaction lock that is unique to each MessageReceiver instance,
+     * preferably using std::lock_guard or, for a more generic approach,
+     * std::scoped_lock.
      */
-    void push_message(const Message &) {};
+    virtual void push_message(const Message &) = 0;
+
+protected:
+    std::mutex &transaction_lock() { return m_transaction_lock; }
+
+private:
+    std::mutex m_transaction_lock;
 };
 }
