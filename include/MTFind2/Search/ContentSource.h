@@ -18,8 +18,10 @@
 #pragma once
 
 #include <Shared/NonCopyable.h>
+#include <Shared/Tagged.h>
 
 #include <fstream>
+#include <iostream>
 #include <string>
 
 namespace mtfind2 {
@@ -28,15 +30,23 @@ namespace mtfind2 {
  * for in. These are initialized on startup and last until program termination.
  * Since its lifetime is permanent it makes no sense for them to be copied around.
  */
-struct ContentSource final : NonCopyable {
+struct ContentSource final : NonCopyable, Tagged<std::string> {
     ContentSource(std::string file_path)
         : m_file_path(std::move(file_path))
         , m_stream(m_file_path, std::ios::in) // Open read-only
     {
+        for (std::string line; std::getline(m_stream, line);)
+            m_lines.push_back(std::move(line));
+        std::cout << tag() << ": " << m_lines.size() << " line(s) read" << std::endl;
+        m_stream.close();
     }
+
+    const std::string tag() const { return "ContentSource(\"" + m_file_path + "\")"; }
+    const std::vector<std::string> &lines() const { return m_lines; }
 
 private:
     const std::string m_file_path;
-    const std::ifstream m_stream;
+    std::ifstream m_stream;
+    std::vector<std::string> m_lines;
 };
 }
