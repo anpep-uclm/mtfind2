@@ -24,9 +24,12 @@
 
 #include <MTFind2/Search/SearchProxy.h>
 #include <MTFind2/Search/SearchService.h>
+#include <Shared/TextHelper.h>
 
 using namespace mtfind2;
 using namespace std::chrono_literals;
+
+#pragma region Signal handling
 
 static std::atomic<bool> g_keep_running = true;
 
@@ -40,29 +43,36 @@ static void signal_handler(int signal_num)
 }
 #endif // __unix__
 
+#pragma endregion
+
+static void add_sample_content_sources(std::vector<SearchService> &search_services)
+{
+    for (const auto &entry : std::filesystem::directory_iterator("data")) {
+        if (entry.is_regular_file() && entry.path().extension() == ".txt") {
+            const auto *content_source = new ContentSource(entry.path().string());
+            for (auto &search_service : search_services)
+                search_service.add_content_source(*content_source);
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
 #ifdef __unix__
     signal(SIGINT, signal_handler);
 #endif
 
+    // Initialize search services
     const auto num_cores = std::thread::hardware_concurrency();
     std::vector<SearchService> search_services(num_cores);
+    add_sample_content_sources(search_services);
 
-    const ContentSource content_sources[] = {
-        { "data/La-última-sirena.txt" },
-        { "data/prueba.txt" },
-        { "data/VIVE-TU-SUEÑO.txt" }
-    };
-
+    // Create search proxy for concurrent and parallel search resolution
     SearchProxy search_proxy;
-    for (size_t i = 0; i < num_cores; i++) {
-        for (const auto &content_source : content_sources)
-            search_services[i].add_content_source(content_source);
-        search_proxy.add_search_service(search_services[i]);
-    }
+    for (auto &search_service : search_services)
+        search_proxy.add_search_service(search_service);
 
-
+    // Create thread for mocking search requests continuously
     std::thread mock_thread([&search_proxy]() {
         const size_t search_request_count = 15;
         const auto period = 2s;
@@ -73,18 +83,13 @@ int main(int argc, char *argv[])
                 auto search_request = SearchRequest::create_random();
                 search_proxy.query(*client, *search_request);
             }
-
             std::this_thread::sleep_for(period);
         }
     });
 
-    std::thread search_thread([&search_proxy]() {
-        while (g_keep_running)
-            search_proxy.serve();
-    });
-
-    search_thread.join();
+    search_proxy.start();
     mock_thread.join();
+    search_proxy.stop();
 
     return 0;
 }
