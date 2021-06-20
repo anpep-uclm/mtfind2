@@ -15,27 +15,34 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#include <iostream>
+
 #include <MTFind2/Client/Client.h>
 #include <MTFind2/Messages/CreditRechargeResponseMessage.h>
 #include <MTFind2/Messages/NoSearchResultsFoundMessage.h>
 #include <MTFind2/Messages/NotEnoughCreditMessage.h>
 #include <MTFind2/Messages/SearchResultFoundMessage.h>
 #include <MTFind2/Payment/PaymentService.h>
-#include <iostream>
+#include <Shared/TextHelper.h>
 
 namespace mtfind2 {
 void Client::push_message(const NotEnoughCreditMessage &message)
 {
-    const std::scoped_lock lock(transaction_lock());
-    std::cerr << tag() << ": no enough credit" << std::endl;
-    PaymentService::instance().push_message(CreditRechargeRequestMessage(*this, 15));
+    // Don't lock transaction! Doing so will prevent CreditRechargeResponseMessage
+    // to get through and complete the operation, resulting in a deadlock!
+    std::cout << tag() << ": requesting more credit" << std::endl;
+    PaymentService::instance().push_message(CreditRechargeRequestMessage(*this, message.semaphore(), 15));
 }
 
 void Client::push_message(const CreditRechargeResponseMessage &message)
 {
     const std::scoped_lock lock(transaction_lock());
-    std::cout << tag() << ": got " << message.amount() << " in credit" << std::endl;
-    m_credit += message.amount();
+    if (message.amount() == 0) {
+        std::cerr << tag() << ": ran out of credit!" << std::endl;
+    } else {
+        std::cout << tag() << ": got " << message.amount() << " in credit" << std::endl;
+        m_credit += message.amount();
+    }
 }
 
 void Client::push_message(const NoSearchResultsFoundMessage &message)
@@ -47,7 +54,12 @@ void Client::push_message(const NoSearchResultsFoundMessage &message)
 void Client::push_message(const SearchResultFoundMessage &message)
 {
     const std::scoped_lock lock(transaction_lock());
-    std::cout << tag() << ": search result for " << message.search_request().query() << std::endl;
+    const auto &search_result = message.search_result();
+
+    std::cout << message.search_request() << ": " << search_result.content_source() << ": line " << search_result.line() << ", column " << search_result.column() << ": ..." << search_result.surrounding_text() << "...";
+    if (search_result.is_final_result())
+        std::cout << " (search yielded no more results)";
+    std::cout << std::endl;
 }
 
 void Client::push_message(const Message &message)

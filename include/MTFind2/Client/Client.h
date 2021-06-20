@@ -96,7 +96,7 @@ struct Client final : MessageReceiver, NonCopyable, Tagged<std::string> {
     static Client *create_random()
     {
         static std::atomic<uint32_t> s_last_id(0);
-        static std::default_random_engine s_random_engine;
+        static std::default_random_engine s_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
 
         std::uniform_int_distribution<int> generate_random_boolean(0, 1);
 
@@ -109,17 +109,13 @@ struct Client final : MessageReceiver, NonCopyable, Tagged<std::string> {
     uint32_t id() const { return m_id; }
     SubscriptionType subscription_type() const { return m_subscription_type; }
     bool has_credit() const { return m_credit > 0; }
-    bool has_paid_subscription() const
-    {
-        return m_subscription_type == SubscriptionType::Premium && m_credit != NotUsingCredit;
-    }
 
     /**
      * Consumes exactly 1 credit.
      */
     void consume_credit()
     {
-        if (has_paid_subscription() && has_credit())
+        if (has_credit())
             m_credit--;
     }
 
