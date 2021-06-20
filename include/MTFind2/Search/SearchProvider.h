@@ -31,6 +31,6 @@ namespace mtfind2 {
  * should not be copied or moved around.
  */
 struct SearchProvider : NonCopyable, NonMoveable {
-    virtual void query(const Client &client, const SearchRequest &search_request) = 0;
+    virtual void query(Client &client, const SearchRequest &search_request) = 0;
 };
 }
