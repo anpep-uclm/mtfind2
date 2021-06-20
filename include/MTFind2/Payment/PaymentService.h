@@ -25,6 +25,10 @@
 
 #include <fstream>
 #include <string>
+#include <thread>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 namespace mtfind2 {
 /**
@@ -53,7 +57,16 @@ struct PaymentService final : MessageReceiver, NonCopyable, NonMoveable {
     void push_message(const CreditRechargeRequestMessage &message)
     {
         const std::scoped_lock lock(transaction_lock());
-        message.client().push_message(CreditRechargeResponseMessage(message.amount()));
+
+        // Don't recharge credit for free users!
+        if (message.client().subscription_type() == Client::SubscriptionType::Premium) {
+            message.client().push_message(CreditRechargeResponseMessage(message.amount()));
+        } else {
+            message.client().push_message(CreditRechargeResponseMessage(0));
+        }
+
+        // Notify a credit recharge response
+        message.semaphore().notify();
     }
 
     void push_message(const Message &message)
