@@ -50,13 +50,13 @@ struct Dictionary final : NonCopyable, NonMoveable {
 
     const std::string &random_word() const
     {
-        static std::default_random_engine s_random_engine;
+        static std::default_random_engine s_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
         std::uniform_int_distribution<int> get_random_index(0ul, m_words.size() - 1);
         return m_words[get_random_index(s_random_engine)];
     }
 
 private:
-    const std::string k_dictionary_path { "data/dictionary.txt" };
+    const std::string k_dictionary_path { "data/dictionary.list" };
 
     std::ifstream m_dictionary_stream;
     std::vector<std::string> m_words;

@@ -22,6 +22,7 @@
 
 #include <MTFind2/Search/Dictionary.h>
 #include <Shared/NonCopyable.h>
+#include <Shared/Tagged.h>
 
 namespace mtfind2 {
 /**
@@ -29,23 +30,30 @@ namespace mtfind2 {
  * calculating response time. As they are short-lived and intended to be
  * single-instance, no copy semantics are allowed on search request objects.
  */
-struct SearchRequest final : NonCopyable {
-    explicit SearchRequest(const std::string& query)
-        : m_query(query)
+struct SearchRequest final : NonCopyable, Tagged<std::string> {
+    explicit SearchRequest(size_t id, const std::string &query)
+        : m_id(id)
+        , m_query(query)
         , m_timestamp(std::chrono::steady_clock::now())
     {
     }
 
-    static SearchRequest* create_random()
+    static SearchRequest *create_random()
     {
-        return new SearchRequest(Dictionary::instance().random_word());
+        static std::atomic<size_t> s_last_id(0);
+        return new SearchRequest(s_last_id++, Dictionary::instance().random_word());
     }
 
+    const std::string tag() const { return "SearchRequest(" + std::to_string(m_id) + ", \"" + m_query + "\")"; }
+
+    size_t id() const { return m_id; }
     const std::string &query() const { return m_query; }
     const std::chrono::time_point<std::chrono::steady_clock> &timestamp() const { return m_timestamp; }
 
 private:
-    const std::string& m_query;
+    const size_t m_id;
+    const std::string &m_query;
     const std::chrono::time_point<std::chrono::steady_clock> m_timestamp;
+    std::mutex m_suspend_mutex;
 };
 }

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <MTFind2/MessagePassing/Message.h>
+#include <Shared/Semaphore.h>
 
 namespace mtfind2 {
 
@@ -26,17 +27,20 @@ namespace mtfind2 {
  * a specific amount of credits.
  */
 struct CreditRechargeRequestMessage final : private Message {
-    CreditRechargeRequestMessage(Client &client, size_t amount)
+    CreditRechargeRequestMessage(Client &client, Semaphore &semaphore, size_t amount)
         : m_client(client)
         , m_amount(amount)
+        , m_semaphore(semaphore)
     {
     }
 
     Client &client() const { return m_client; }
     size_t amount() const { return m_amount; }
+    Semaphore &semaphore() const { return m_semaphore; }
 
 private:
     Client &m_client;
     const size_t m_amount;
+    Semaphore &m_semaphore;
 };
 }

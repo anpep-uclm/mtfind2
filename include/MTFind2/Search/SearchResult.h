@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include <chrono>
 #include <Shared/NonCopyable.h>
+#include <chrono>
 
 #include "ContentSource.h"
 
@@ -31,28 +31,36 @@ namespace mtfind2 {
 struct SearchResult final : NonCopyable {
     SearchResult(
         const ContentSource &content_source,
+        const std::string_view &surrounding_text,
         size_t line,
         size_t column,
-        size_t length)
+        size_t length,
+        bool is_final_result = false)
         : m_content_source(content_source)
+        , m_surrounding_text(surrounding_text)
         , m_line(line)
         , m_column(column)
         , m_length(length)
+        , m_is_final_result(is_final_result)
         , m_timestamp(std::chrono::steady_clock::now())
     {
     }
 
     const ContentSource &content_source() const { return m_content_source; }
+    const std::string_view &surrounding_text() const { return m_surrounding_text; }
     size_t line() const { return m_line; }
     size_t column() const { return m_column; }
     size_t length() const { return m_length; }
+    bool is_final_result() const { return m_is_final_result; }
     const std::chrono::time_point<std::chrono::steady_clock> &timestamp() const { return m_timestamp; }
 
 private:
     const ContentSource &m_content_source;
+    const std::string_view &m_surrounding_text;
     const size_t m_line;
     const size_t m_column;
     const size_t m_length;
+    const bool m_is_final_result;
     const std::chrono::time_point<std::chrono::steady_clock> m_timestamp;
 };
 }

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <MTFind2/MessagePassing/Message.h>
+#include <Shared/Semaphore.h>
 
 namespace mtfind2 {
 /**
@@ -26,5 +27,14 @@ namespace mtfind2 {
  * search request.
  */
 struct NotEnoughCreditMessage final : private Message {
+    NotEnoughCreditMessage(Semaphore &semaphore)
+        : m_semaphore(semaphore)
+    {
+    }
+
+    Semaphore &semaphore() const { return m_semaphore; }
+
+private:
+    Semaphore &m_semaphore;
 };
 }
