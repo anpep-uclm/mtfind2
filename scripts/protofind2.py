@@ -159,7 +159,7 @@ class SearchService(SearchProvider):
             if client.has_paid_subscription and not client.has_credit:
                 client.push_message(NotEnoughCreditMessage())
                 while not client.has_credit:
-                    # replace with cv
+                    # replace with m_condition_variable
                     pass
                 print("resuming query")
 
