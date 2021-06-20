@@ -20,6 +20,7 @@
 #include <memory>
 #include <vector>
 
+#include "ContentSource.h"
 #include "SearchProvider.h"
 
 namespace mtfind2 {
@@ -37,7 +38,7 @@ struct SearchService final : private SearchProvider {
      * @param client Client that issued this search request
      * @param search_request Search request object
      */
-    void query(const Client &client, const SearchRequest &search_request);
+    void query(Client &client, const SearchRequest &search_request);
 
     void add_content_source(const ContentSource &content_source)
     {
@@ -52,7 +53,7 @@ private:
      * @param client Client that issued this search request
      * @param search_request Search request object
      */
-    void query_single_thread(const SearchService &content_source, const Client &client, const SearchRequest &search_request) const;
+    void find_in_source(const ContentSource &content_source, Client &client, const SearchRequest &search_request) const;
 
     /**
      * Content sources are not bound to a SearchService instance. This is by-design,
