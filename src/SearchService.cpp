@@ -16,20 +16,36 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <iostream>
+#include <thread>
 
 #include <MTFind2/Search/SearchService.h>
+#include <MTFind2/Messages/NoSearchResultsFoundMessage.h>
 
 namespace mtfind2 {
-void SearchService::query(const Client &client, const SearchRequest &search_request)
+void SearchService::query(Client &client, const SearchRequest &search_request)
 {
     /**
      * Any mutation on the content sources vector will take effect in subsequent
      * queries (but not this one).
      */
     std::scoped_lock lock(m_content_sources_lock);
+    std::vector<std::thread> threads(m_content_sources.size());
+
+    for (auto *content_source : m_content_sources) {
+        threads.emplace_back([this, content_source, &client, &search_request] {
+            this->find_in_source(*content_source, client, search_request);
+        });
+    }
+
+    for (auto &thread : threads) {
+        if (thread.joinable())
+            thread.join();
+    }
+
+    threads.clear();
 }
 
-void SearchService::query_single_thread(const SearchService &content_source, const Client &client, const SearchRequest &search_request) const
+void SearchService::find_in_source(const ContentSource &content_source, Client &client, const SearchRequest &search_request) const
 {
 }
 }
