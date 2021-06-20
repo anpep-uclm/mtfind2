@@ -18,9 +18,16 @@
 #pragma once
 
 #include <Shared/NonCopyable.h>
+#include <atomic>
 #include <cstdint>
+#include <functional>
+#include <random>
 
-#include "MessagePassing/MessageReceiver.h"
+#include "MTFind2/MessagePassing/MessageReceiver.h"
+#include "MTFind2/Messages/CreditRechargeResponseMessage.h"
+#include "MTFind2/Messages/NoSearchResultsFoundMessage.h"
+#include "MTFind2/Messages/NotEnoughCreditMessage.h"
+#include "MTFind2/Messages/SearchResultFoundMessage.h"
 
 namespace mtfind2 {
 /**
@@ -29,11 +36,11 @@ namespace mtfind2 {
  * credit notifications. Since clients must be unique, it makes little sense
  * for them to be copyable.
  */
-struct Client final : private NonCopyable, public MessageReceiver {
+struct Client final : MessageReceiver, NonCopyable {
     /**
      * A client with this value as credit is considered as not using credit.
      */
-    constexpr int32_t NotUsingCredit = -1;
+    static constexpr int32_t NotUsingCredit = -1;
 
     /**
      * Enumerates the different subscription types.
@@ -65,6 +72,22 @@ struct Client final : private NonCopyable, public MessageReceiver {
     {
     }
 
+    /**
+     * Creates a client with random parameters
+     * @return An instance of this class
+     */
+    static Client create_random()
+    {
+        static std::atomic<uint32_t> s_last_id(0);
+
+        auto generate_random_boolean = std::bind(std::uniform_int_distribution(0, 1), std::default_random_engine());
+
+        const auto subscription_type = generate_random_boolean() ? SubscriptionType::Premium : SubscriptionType::Standard;
+        const auto credit = subscription_type == SubscriptionType::Premium ? 15 : NotUsingCredit;
+
+        return { s_last_id++, subscription_type, credit };
+    }
+
     uint32_t id() const { return m_id; }
     SubscriptionType subscription_type() const { return m_subscription_type; }
     bool has_credit() const { return m_credit > 0; }
@@ -81,6 +104,12 @@ struct Client final : private NonCopyable, public MessageReceiver {
         if (has_paid_subscription() && has_credit())
             m_credit--;
     }
+
+    void push_message(const NotEnoughCreditMessage &message);
+    void push_message(const CreditRechargeResponseMessage &message);
+    void push_message(const NoSearchResultsFoundMessage &message);
+    void push_message(const SearchResultFoundMessage &message);
+    void push_message(const Message &message);
 
 private:
     uint32_t m_id;

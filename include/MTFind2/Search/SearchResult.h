@@ -21,17 +21,21 @@
 
 namespace mtfind2 {
 /**
- * Content sources map to plain text files where search terms will be looked
- * for in. These are initialized on startup and last until program termination.
- * Since its lifetime is permanent it makes no sense for them to be copied around.
+ * Search results are intended to have a short lifetime and thus dont need to
+ * be copied around. They represent a single search occurrence that is sent as
+ * a message to a client.
  */
-struct ContentSource final : private NonCopyable {
-    ContentSource(const std::string &file_path)
-        : m_file_path(file_path)
+struct SearchResult final : NonCopyable {
+    SearchResult(
+        const SearchRequest &search_request,
+        const ContentSource &content_source,
+        size_t line,
+        size_t column,
+        size_t length)
     {
     }
+};
 
 private:
-    std::string ;
-};
+    const SearchRequest&m_search_request;
 }
