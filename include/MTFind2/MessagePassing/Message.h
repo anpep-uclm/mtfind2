@@ -30,6 +30,6 @@ namespace mtfind2 {
  * and avoid messages from having complex types. Also, try to use references
  * instead of object instances whenever possible.
  */
-struct Message : private NonCopyable {
+struct Message : NonCopyable {
 };
 }

@@ -28,7 +28,7 @@ namespace mtfind2 {
  * for in. These are initialized on startup and last until program termination.
  * Since its lifetime is permanent it makes no sense for them to be copied around.
  */
-struct ContentSource final : private NonCopyable {
+struct ContentSource final : NonCopyable {
     ContentSource(std::string file_path)
         : m_file_path(std::move(file_path))
         , m_stream(m_file_path, std::ios::in) // Open read-only
