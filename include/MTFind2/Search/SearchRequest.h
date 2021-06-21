@@ -54,6 +54,5 @@ private:
     const size_t m_id;
     const std::string &m_query;
     const std::chrono::time_point<std::chrono::steady_clock> m_timestamp;
-    std::mutex m_suspend_mutex;
 };
 }
