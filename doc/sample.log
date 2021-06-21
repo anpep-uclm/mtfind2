@@ -1,0 +1,187 @@
+ContentSource("data/SEAMOS-PERSONAS-DE-INFLUENCIA.txt"): 5848 line(s) read
+ContentSource("data/ACTITUD-DE-VENDEDOR.txt"): 5179 line(s) read
+ContentSource("data/21-LEYES-DEL-LIDERAZGO.txt"): 5565 line(s) read
+ContentSource("data/17-LEYES-DEL-TRABJO-EN-EQUIPO.txt"): 6525 line(s) read
+ContentSource("data/prueba.txt"): 12 line(s) read
+ContentSource("data/VIVE-TU-SUEÑO.txt"): 8794 line(s) read
+ContentSource("data/El-oro-y-la-ceniza.txt"): 11852 line(s) read
+ContentSource("data/25-MANERAS-DE-GANARSE-A-LA-GENTE.txt"): 3374 line(s) read
+ContentSource("data/La-última-sirena.txt"): 15879 line(s) read
+[140368677447232] SearchRequest(1, "empezado")
+[140368711018048] SearchRequest(2, "trazó")
+[140368669054528] [140368694232640] SearchRequest(0, "reprenderle")
+Client(1, Standard)SearchRequest(4, "actuaba")
+: requesting more credit
+[Client(1, Standard)140368702625344] Client(1, Standard): requesting more credit: ran out of credit!
+
+Client(2, Standard): requesting more credit
+Client(2, Standard)Client(1, Standard): requesting more credit
+: ran out of credit!
+Client(1, Standard)SearchRequest(3, "levantaste")
+: ran out of credit!
+[140368685839936] Client(1, Standard): ran out of credit!
+Client(1, Standard): requesting more credit
+Client(1, Standard): ran out of credit!
+SearchRequest(5, "fueron")
+Client(0, Standard): requesting more credit
+Client(0, Standard)[140368719410752] : ran out of credit!
+Client(5, Standard): requesting more credit
+SearchRequest(7, "asequible")
+Client(5, Standard)[140368568407616] Client(0, Standard): requesting more credit
+: ran out of credit!SearchRequest(6, "millonaria")
+
+Client(0, Standard)Client(2, Standard): requesting more credit
+: ran out of credit!
+Client(2, Standard): ran out of credit!
+Client(2, Standard): requesting more credit
+Client(2, Standard): ran out of credit!
+Client(2, Standard): requesting more credit
+Client(2, Standard): ran out of credit!
+Client(1, Standard): requesting more credit
+Client(1, Standard): ran out of credit!
+Client(5, Standard): requesting more credit
+Client(5, Standard): ran out of credit!
+Client(5, Standard): requesting more credit
+Client(5, Standard): ran out of credit!
+Client(5, Standard): requesting more credit
+Client(5, Standard): ran out of credit!
+Client(2, Standard): requesting more credit
+Client(2, Standard): ran out of credit!
+Client(1, Standard): requesting more credit
+Client(1, Standard): ran out of credit!
+Client(5, Standard): requesting more credit
+Client(5, Standard): ran out of credit!
+Client(2, Standard): requesting more credit
+Client(2, Standard): ran out of credit!
+Client(2, Standard): requesting more credit
+Client(2, Standard): ran out of credit!
+Client(1, Standard): requesting more credit
+Client(1, Standard): ran out of credit!
+Client(2, Standard): requesting more credit
+Client(2, Standard): ran out of credit!
+Client(5, Standard): requesting more credit
+Client(5, Standard): ran out of credit!
+Client(5, Standard): requesting more credit
+Client(5, Standard): ran out of credit!
+Client(0, Standard): requesting more credit
+Client(0, Standard): ran out of credit!
+Client(0, Standard): requesting more credit
+Client(0, Standard): ran out of credit!
+Client(0, Standard): requesting more credit
+Client(0, Standard)Client(0, Standard): requesting more credit
+Client(0, Standard): requesting more credit
+Client(5, Standard): requesting more credit
+SearchRequest(4, "actuaba"): ContentSource("data/21-LEYES-DEL-LIDERAZGO.txt"): line 2009, column 33: ...jugadores interactuaban...
+total response time: 15.7806ms
+Client(1, Standard): requesting more credit
+: ran out of credit!
+Client(0, Standard): ran out of credit!
+Client(0, Standard): ran out of credit!
+Client(5, Standard): ran out of credit!
+Client(1, Standard): ran out of credit!
+SearchRequest(6, "millonaria"): ContentSource("data/SEAMOS-PERSONAS-DE-INFLUENCIA.txt"): line 2320, column 1: ...millonaria a...
+total response time: 51.0381ms
+SearchRequest(3, "levantaste"): ContentSource("data/La-última-sirena.txt"): line 1665, column 56: ...Kell, levantaste una...
+total response time: 51.2604ms
+SearchRequest(6, "millonaria"): ContentSource("data/SEAMOS-PERSONAS-DE-INFLUENCIA.txt"): line 2366, column 31: ...idea millonaria a...
+total response time: 51.385ms
+Client(1, Standard): requesting more credit
+Client(1, Standard): ran out of credit!
+[140368677447232] SearchRequest(13, "apologista")
+SearchRequest(4, "actuaba"): ContentSource("data/21-LEYES-DEL-LIDERAZGO.txt"): line 3470, column 21: ...cómo interactuaba con...
+total response time: 69.6319ms
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+Client(5, Standard): requesting more credit
+Client(5, Standard): ran out of credit!
+SearchRequest(7, "asequible"): ContentSource("data/El-oro-y-la-ceniza.txt"): line 7898, column 26: ...ser asequible al...
+total response time: 87.3844ms
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+Client(13, Standard): requesting more credit
+Client(13, Standard): ran out of credit!
+SearchRequest(6, "millonaria"): ContentSource("data/17-LEYES-DEL-TRABJO-EN-EQUIPO.txt"): line 85, column 71: ...decisión multimillonaria de...
+total response time: 98.6109ms
+Client(13, Standard): requesting more credit
+Client(0, Standard): requesting more credit
+Client(0, Standard): ran out of credit!
+Client(2, Standard): requesting more credit
+Client(2, Standard): ran out of credit!
+Client(0, Standard): requesting more credit
+[Client(0, Standard)140368685839936] : ran out of credit!SearchRequest(14, "detestaba")
+
+Client(13, Standard): ran out of credit!
+[140368694232640] SearchRequest(12, "ejecutores")
+[140368711018048] SearchRequest(8, "regularidad")
+[140368677447232] SearchRequest(11, "garabatear")
+Client(12, Standard): requesting more credit
+Client(12, Standard): ran out of credit!
+Client(12, Standard): requesting more credit
+Client(12, Standard): ran out of credit!
+Client(12, Standard): requesting more credit
+Client(12, Standard): ran out of credit!
+Client(12, Standard): requesting more credit
+Client(8, Standard): requesting more credit
+Client(8, Standard): requesting more credit
+Client(12, Standard)Client(12, Standard): requesting more credit: requesting more credit
+Client(8, Standard): requesting more credit
+Client(12, Standard): ran out of credit!
+Client(8, Standard): ran out of credit!
+Client(8, Standard): ran out of credit!
+Client(12, Standard): ran out of credit!
+Client(8, Standard): ran out of credit!
+
+Client(12, Standard): ran out of credit!
+Client(8, Standard): requesting more credit
+Client(8, Standard): ran out of credit!
+Client(8, Standard): requesting more credit
+Client(8, Standard): ran out of credit!Client(12, Standard): requesting more credit
+Client(12, Standard): requesting more credit
+
+Client(8, Standard): requesting more credit
+Client(8, Standard): ran out of credit!
+Client(12, Standard): requesting more credit
+Client(12, Standard): ran out of credit!
+Client(12, Standard): ran out of credit!
+Client(12, Standard): ran out of credit!
+[140368694232640] SearchRequest(10, "organizan")
+Client(8, Standard): requesting more credit
+Client(8, Standard): ran out of credit!
+Client(8, Standard): requesting more credit
+Client(8, Standard): ran out of credit!
+Client(8, Standard): requesting more credit
+Client(8, Standard): ran out of credit!
+[140368711018048] SearchRequest(9, "asidas")
+SearchRequest(6, "millonaria"): ContentSource("data/17-LEYES-DEL-TRABJO-EN-EQUIPO.txt"): line 2728, column 57: ...aventura multimillonaria hasta...
+total response time: 151.445ms
+SearchRequest(10, "organizan"): ContentSource("data/El-oro-y-la-ceniza.txt"): line 1280, column 70: ...que organizan...
+total response time: 175.4ms
+SearchRequest(4, "actuaba"): ContentSource("data/El-oro-y-la-ceniza.txt"): line 7173, column 42: ...que actuaba bajo...
+total response time: 212.55ms
+SearchRequest(14, "detestaba"): ContentSource("data/VIVE-TU-SUEÑO.txt"): line 3660, column 1: ...detestaba»....
+total response time: 270.405ms
+SearchRequest(4, "actuaba"): ContentSource("data/El-oro-y-la-ceniza.txt"): line 10731, column 47: ...donde actuaba el...
+total response time: 272.318ms
+SearchRequest(10, "organizan"): ContentSource("data/VIVE-TU-SUEÑO.txt"): line 7239, column 41: ...que organizan seminarios...
+total response time: 348.386ms
+SearchRequest(9, "asidas"): ContentSource("data/La-última-sirena.txt"): line 5259, column 57: ...manos asidas con...
+total response time: 379.487ms
+SearchRequest(14, "detestaba"): ContentSource("data/El-oro-y-la-ceniza.txt"): line 10210, column 7: ...—El detestaba a...
+total response time: 426.113ms
+SearchRequest(14, "detestaba"): ContentSource("data/El-oro-y-la-ceniza.txt"): line 10361, column 61: ...y detestaba....
+total response time: 427.255ms
+SearchRequest(11, "garabatear"): ContentSource("data/La-última-sirena.txt"): line 8554, column 22: ...de garabatear notas...
+total response time: 429.588ms
+SearchRequest(14, "detestaba"): ContentSource("data/El-oro-y-la-ceniza.txt"): line 11095, column 1: ...detestaba a...
+total response time: 433.047ms
+received SIGINT
