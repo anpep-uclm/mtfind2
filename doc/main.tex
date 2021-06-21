@@ -8,7 +8,7 @@
 	margin=0pt
 }
 \usepackage{mathptmx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage[11pt]{extsizes}
 \usepackage{graphicx}
 \usepackage{caption}
@@ -41,6 +41,8 @@
 	\begin{abstract}
 		Para la tercera práctica de la asignatura de Sistemas Operativos II, se solicita el diseño e implementación de un programa en el lenguaje C++ siguiendo el paradigma productor-consumidor en el que se presta un servicio de búsqueda textual a clientes que lo solicitan de forma dinámica. En esta propuesta se implementan varios servicios que, mediante el paso de mensajes y utilizando características de concurrencia modernas de la librería estándar de C++, simulan peticiones de dichos servicios por parte de clientes que se crean continuamente. La solución se materializa en la producción de dos artefactos \textit{software}; a saber, un prototipo escrito en el lenguaje de programación Python (\texttt{protofind2.py}) y una implementación final del programa \texttt{mtfind2(1))} (haciendo alusión al producto de la práctica anterior).
 	\end{abstract}
+
+	\tableofcontents
 	
 	
 	\section{Problema Planteado}
@@ -86,7 +88,7 @@
 	
 	Aunque parezca innecesario, más tarde nos daremos cuenta de que ser explicitos en la declaración de esta semántica nos va a ahorrar mucho tiempo de desarrollo permitiendo que el compilador detecte por nosotros errores de lógica, de corrupción de memoria y comportamientos indefinidos (\textit{undefined behaviour}).
 	
-	\subsubsection*{Fuentes de Contenido y Servicio de Búsqueda}
+	\subsection{Fuentes de Contenido y Servicio de Búsqueda}
 	La idea es que los clientes puedan realizar peticiones de búsqueda y los servicios de búsqueda, buscando de forma paralela en todas las fuentes de contenido de las que dispongan, envíe de manera continua mensajes a los clientes notificándoles de que se ha encontrado un resultado.
 	
 	\begin{figure}[h]
@@ -111,7 +113,7 @@
 		\textbf{Política de desencolamiento.} Cada vez que se va a desencolar una petición, se sigue una función de distribución continua y uniforme para generar un número real arbitrario $p$ en el rango $[0, 1]$. Si $p\leq0.8$, se desencolará una petición de la cola \textit{premium}; de lo contrario, se desencolará de la cola estándar. Al ser una distribución uniforme, el 20\% de las veces se atendera a un cliente estándar y el 80\% restante a un cliente \textit{premium}. Es una solución \textit{na"if} a un problema de planificación que podría resolverse de manera más utilizando un algoritmo similar al de partición compartida (\textit{GPS} \cite{gps}) asignando un peso fijo a cada cola. Esto aseguraría que en todo momento se está atendiendo al 20\% de las peticiones estándar existentes y al 80\% de las peticiones \textit{premium} existentes. Por simplicidad, se ha implementado como se expone.
 	\end{quotation}
 	
-	\subsubsection*{Paso de Mensajes entre Componentes}
+	\subsection{Paso de Mensajes entre Componentes}
 	Se pretende facilitar un mecanismo de comunicación simple a través del paso de mensajes que inician una operación atómica en el objeto que los recibe. Esto es útil para notificar a objetos de eventos a los que no se estaba esperando de forma activa (en contraste con otros que se explicarán más adelante) pero que deben incurrir en una acción inmediata.
 	
 	\begin{figure}[h]
@@ -126,7 +128,7 @@
 	
 	Las operaciones de gestión de mensajes son atómicas y deben ser breves. No deben ser abusadas para la implementación de esperas activas, como la que es necesaria para pausar y reanudar una búsqueda mientras el cliente recarga su saldo.
 	
-	\subsubsection*{Espera Activa y Semáforos}
+	\subsection{Espera Activa y Semáforos}
 	Cuando un cliente agota todo su saldo, el servicio de búsqueda debe pausar la operación de búsqueda y esperar a que el saldo haya sido restaurado. Es tentador realizar una espera activa para solventar esto:
 	
 	\begin{verbatim}
@@ -136,15 +138,13 @@
 	
 	Sin embargo, hacerlo solo incurre un desaprovechamiento del tiempo de CPU asignado al hilo e introduce una fuga de recursos inaceptable. Necesitamos un mecanismo de señalización que nos permita esperar a que una condición se dé, como un \textit{semáforo}. La clase \texttt{Semaphore} implementa un semáforo binario utilizando la primitiva \texttt{std::condition\_variable} y nos ofrece una solución al problema de la pausa/reanudación de búsqueda.
 	
-	\pagebreak
-	
 	Cuando un cliente se queda sin saldo, se le envía el mensaje correspondiente para que solicite al servicio de pago una recarga. Un detalle importante de los mensajes es que pueden llevar \textit{estado}. Así, cuando se envía el mensaje, se envía con él una referencia al semáforo:
 	
 	\begin{verbatim}
 		if (!client.has_credit() && client.is_premium()) {
-			Semaphore semaphore;
-			client.push_message(NotEnoughCreditMessage(semaphore));
-			semaphore.wait();
+		    Semaphore semaphore;
+		    client.push_message(NotEnoughCreditMessage(semaphore));
+		    semaphore.wait();
 		}
 	\end{verbatim}
 	
@@ -153,22 +153,24 @@
 	\begin{verbatim}
 		void Client::push_message(NotEnoughCreditMessage &message)
 		{
-			ps.push_message(CreditRechargeRequestMessage(*this, 15,
-			message.semaphore()));
+		    ps.push_message(CreditRechargeRequestMessage(*this, 15,
+		    message.semaphore()));
 		}
 	\end{verbatim}
 	
 	Finalmente, el servicio de pago notifica la recarga a través de un mensaje y reanuda la búsqueda señalizando el semáforo (\texttt{semaphore.notify()}).
 	
-	\subsubsection*{Algoritmo de Búsqueda y Paralelización}
+	\subsection{Algoritmo de Búsqueda y Paralelización}
 	
 	Cada vez que un servicio de búsqueda recibe una petición, $M$ hilos se encargan de ejecutar el algoritmo de búsqueda de manera concurrente sobre cada una de las fuentes de contenido registradas para la búsqueda (siendo $M$ el número de fuentes).
 	
+	\begin{quotation}
+		\textbf{Observación.} Cada vez que un servicio de búsqueda va a atender una petición, crea hilos para cada fuente de contenido. Quizá sería más óptimo preasignar los hilos a cada fuente y notificar mediante un semáforo la entrada de una petición de búsqueda. Esperamos que no haya que implementar esto en una \textit{tercera} convocatoria.
+	\end{quotation}
+	
 	El algoritmo de búsqueda itera sobre todas las líneas de texto de la fuente que se está procesando y realiza una transformación tanto en el término de búsqueda como en el texto para convertirlo a minúsculas y efectuar así una búsqueda insensible a mayúsculas (\textit{case-insensitive}).
 	
-	Por cada ocurrencia del término de búsqueda, se consume un crédito del cliente y se le notifica a través de un mensaje (\texttt{SearchResultFoundMessage}) con detalles sobre la línea, posiciones inicial y final, y las palabras que rodean al texto coincidente.
-	
-	Cuando un cliente estándar agota su saldo, no se realiza ninguna espera y el servicio de pago no realizará ninguna recarga efectiva (emitirá un mensaje de recarga con una cantidad de $0$ créditos).
+	Por cada ocurrencia del término de búsqueda, se consume un crédito del cliente y se le notifica a través de un mensaje (\texttt{SearchResultFoundMessage}) con detalles sobre la línea, posiciones inicial y final, y las palabras que rodean al texto coincidente. Cuando un cliente estándar agota su saldo, no se realiza ninguna espera y el servicio de pago no realizará ninguna recarga efectiva (emitirá un mensaje de recarga con una cantidad de $0$ créditos).
 	
 	\begin{thebibliography}{9}
 		\bibitem{arc}
